@@ -1,0 +1,30 @@
+{
+  "name": "Mohammad Rizwan",
+  "role": "GenAI Developer Intern",
+  "bio": "I am a creative developer specializing in building modern web interfaces and AI-integrated applications.",
+  "skills": [
+    "HTML, CSS, JavaScript",
+    "Python & FastAPI",
+    "React.js, next.js",
+    "Google Gemini API Integration",
+    "RAG Implementation",
+    "Vector Embedding with pgvector",
+    "Vector Databases like Pinecone, ChromaDB"
+  ],
+  "experience": [
+    {
+      "company": "Karanji Infotech Pvt Ltd",
+      "role": "GenAI Developer Intern",
+      "year": " Nov 2025-Present",
+      "details": "Optimized website performance and improved UI responsiveness."
+    }
+  ],
+  "projects": [
+    {
+      "title": "AI Portfolio",
+      "tech": "Gemini API, Python, HTML",
+      "details": "A personal website that uses AI to answer questions about me."
+    }
+  ],
+  "contact": "mdrizwan01072004@gmail.com"
+}

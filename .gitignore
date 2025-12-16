@@ -1,0 +1,31 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.env/
+
+# VS Code settings
+.vscode/
+
+# Environment / secrets
+*.env
+
+# Logs and coverage
+*.log
+.coverage
+htmlcov/
+.cache/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Node / front-end (if added later)
+node_modules/
+dist/
+build/

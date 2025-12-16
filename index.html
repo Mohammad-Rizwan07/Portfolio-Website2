@@ -3,97 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPay Search Loop</title>
+    <title>My Portfolio</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* 1. Global Reset to prevent layout issues */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* GLOBAL RESET */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            background-color: #f1f3f4;
+            background-color: #f8f9fa;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             font-family: 'Roboto', sans-serif;
         }
 
-        /* 2. The Container */
+        /* SEARCH BAR */
         .search-container {
             position: relative;
-            width: 320px;
-            height: 50px;
+            width: 380px;
+            height: 55px;
             background: white;
-            border-radius: 25px;
-            box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            padding: 0 15px;
-            overflow: hidden; /* Critical: Cuts off text outside the box */
+            padding: 0 20px;
+            overflow: hidden;
+            z-index: 10;
+            transition: box-shadow 0.3s;
+        }
+        
+        .search-container:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.1);
         }
 
-        .search-icon {
-            color: #5f6368;
-            margin-right: 12px;
-            font-size: 18px;
-            flex-shrink: 0; /* Prevents icon from getting squished */
-            z-index: 5;
-        }
-
+        .search-icon { color: #5f6368; margin-right: 15px; font-size: 18px; z-index: 5; }
+        
         .search-input {
-            border: none;
-            outline: none;
-            width: 100%;
-            height: 100%;
-            font-size: 16px;
-            background: transparent;
-            z-index: 2;
-            position: relative;
-            color: #202124;
+            border: none; outline: none; width: 100%; height: 100%;
+            font-size: 16px; background: transparent; z-index: 2; position: relative; color: #202124;
         }
 
-        /* 3. The Window looking at the text */
+        /* ANIMATED TEXT MASK */
         .text-mask {
-            position: absolute;
-            left: 45px; 
-            top: 0;
-            height: 50px; 
-            width: 200px;
-            pointer-events: none;
-            z-index: 1;
-            /* Flexbox to center the text strip vertically */
-            display: flex;
-            align-items: flex-start; 
+            position: absolute; left: 55px; top: 0; height: 55px; width: 250px;
+            pointer-events: none; z-index: 1; display: flex; align-items: flex-start; 
         }
 
-        /* 4. The Strip that moves */
-        .text-strip {
-            display: flex;
-            flex-direction: column;
-            /* Initial state */
+        .text-strip { display: flex; flex-direction: column; transform: translateY(0); }
+        
+        .text-item {
+            height: 55px; display: flex; align-items: center;
+            color: #9aa0a6; font-size: 16px; user-select: none;
+        }
+
+        .search-input:focus + .text-mask, .search-input:valid + .text-mask { 
+            opacity: 0; transition: opacity 0.2s; 
+        }
+
+        /* ANSWER BUBBLE */
+        .answer-container {
+            margin-top: 25px;
+            width: 380px;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            display: none; /* Hidden initially */
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.4s ease;
+        }
+
+        .answer-container.active {
+            display: block;
+            opacity: 1;
             transform: translateY(0);
         }
 
-        .text-item {
-            height: 50px; /* FIXED HEIGHT: Must match container exactly */
-            display: flex;
-            align-items: center; /* Center text vertically */
-            color: #5f6368;
-            font-size: 16px;
-            white-space: nowrap;
+        .answer-content {
+            color: #3c4043;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Fade out when user interacts */
-        .search-input:focus + .text-mask,
-        .search-input:valid + .text-mask {
-            opacity: 0;
-            transition: opacity 0.2s;
+        .loading {
+            color: #777;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
     </style>
 </head>
@@ -101,66 +104,105 @@
 
     <div class="search-container">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
-        <input type="text" id="searchInput" class="search-input" required>
+        <input type="text" id="searchInput" class="search-input" required autocomplete="off">
         
         <div class="text-mask">
             <div class="text-strip" id="textStrip">
-                <div class="text-item">Ask about me</div>
                 <div class="text-item">Ask about my projects</div>
                 <div class="text-item">Ask about my skills</div>
                 <div class="text-item">Ask about my experience</div>
-                <div class="text-item">Ask about my education</div>
-                <div class="text-item">Ask about my hobbies</div>
+                <div class="text-item">What is my email?</div>
+                <div class="text-item">Tell me about yourself</div>
             </div>
         </div>
     </div>
 
+    <!-- The Response Box -->
+    <div id="answerContainer" class="answer-container">
+        <div id="answerContent" class="answer-content"></div>
+    </div>
+
     <script>
+        // --- 1. INFINITE LOOP ANIMATION ---
         document.addEventListener('DOMContentLoaded', () => {
             const strip = document.getElementById('textStrip');
-            
-            // --- SETUP: Create the Infinite Loop Illusion ---
-            // We clone the first item and add it to the bottom.
-            const firstItem = strip.children[0];
-            const clone = firstItem.cloneNode(true);
+            const clone = strip.children[0].cloneNode(true);
             strip.appendChild(clone);
-
-            // Variables
-            const itemHeight = 50; // Must match CSS height
-            // We count items AFTER cloning (Originals + 1 Clone)
-            const totalItems = strip.children.length; 
+            
+            const itemHeight = 55; // Matches CSS height
+            const totalItems = strip.children.length;
             let currentIndex = 0;
 
-            // --- ANIMATION FUNCTION ---
-            function nextSlide() {
-                // 1. Increment Index
+            setInterval(() => {
                 currentIndex++;
-
-                // 2. Enable smooth animation (0.8s slow glide)
-                strip.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                strip.style.transition = 'transform 0.8s cubic-bezier(0.2, 1, 0.4, 1)';
                 strip.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
 
-                // 3. Check if we hit the Clone (The last item)
                 if (currentIndex === totalItems - 1) {
-                    
-                    // We use 'transitionend' to wait until the movement is 100% DONE.
-                    // This prevents the "blank" glitch or jumping too early.
-                    strip.addEventListener('transitionend', function() {
-                        
-                        // A. Instantly turn off animation
+                    strip.addEventListener('transitionend', () => {
                         strip.style.transition = 'none';
-                        
-                        // B. Teleport back to the top (Index 0)
                         currentIndex = 0;
                         strip.style.transform = `translateY(0px)`;
-                        
-                    }, { once: true }); // Important: Runs only once per loop
+                    }, { once: true });
+                }
+            }, 3000);
+        });
+
+        // --- 2. BACKEND CONNECTION ---
+        const searchInput = document.getElementById('searchInput');
+        const answerContainer = document.getElementById('answerContainer');
+        const answerContent = document.getElementById('answerContent');
+
+        searchInput.addEventListener('keypress', async function (e) {
+            if (e.key === 'Enter') {
+                const question = searchInput.value.trim();
+                if (!question) return;
+
+                // UI: Show Loading
+                answerContainer.classList.add('active');
+                answerContent.innerHTML = `
+                    <div class="loading">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> 
+                        Thinking...
+                    </div>`;
+
+                try {
+                    // Send to Backend
+                    const response = await fetch('http://127.0.0.1:8000/ask', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ question: question })
+                    });
+
+                    if (!response.ok) throw new Error("Server Error");
+
+                    const data = await response.json();
+                    
+                    // UI: Show Result
+                    // Simple typing effect for realism
+                    typeWriter(data.answer);
+
+                } catch (error) {
+                    answerContent.innerHTML = `<span style="color:red;">Server offline. Please run 'uvicorn server:app'.</span>`;
                 }
             }
-
-            // Start the loop every 3 seconds
-            setInterval(nextSlide, 3000);
         });
+
+        // Simple Typewriter Effect Function
+        function typeWriter(text) {
+            answerContent.innerHTML = "";
+            let i = 0;
+            const speed = 20; // ms per letter
+            
+            function type() {
+                if (i < text.length) {
+                    answerContent.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
     </script>
 </body>
 </html>
