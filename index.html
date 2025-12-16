@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPay Search Loop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* 1. Global Reset to prevent layout issues */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f1f3f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* 2. The Container */
+        .search-container {
+            position: relative;
+            width: 320px;
+            height: 50px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            overflow: hidden; /* Critical: Cuts off text outside the box */
+        }
+
+        .search-icon {
+            color: #5f6368;
+            margin-right: 12px;
+            font-size: 18px;
+            flex-shrink: 0; /* Prevents icon from getting squished */
+            z-index: 5;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            height: 100%;
+            font-size: 16px;
+            background: transparent;
+            z-index: 2;
+            position: relative;
+            color: #202124;
+        }
+
+        /* 3. The Window looking at the text */
+        .text-mask {
+            position: absolute;
+            left: 45px; 
+            top: 0;
+            height: 50px; 
+            width: 200px;
+            pointer-events: none;
+            z-index: 1;
+            /* Flexbox to center the text strip vertically */
+            display: flex;
+            align-items: flex-start; 
+        }
+
+        /* 4. The Strip that moves */
+        .text-strip {
+            display: flex;
+            flex-direction: column;
+            /* Initial state */
+            transform: translateY(0);
+        }
+
+        .text-item {
+            height: 50px; /* FIXED HEIGHT: Must match container exactly */
+            display: flex;
+            align-items: center; /* Center text vertically */
+            color: #5f6368;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        /* Fade out when user interacts */
+        .search-input:focus + .text-mask,
+        .search-input:valid + .text-mask {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="searchInput" class="search-input" required>
+        
+        <div class="text-mask">
+            <div class="text-strip" id="textStrip">
+                <div class="text-item">Ask about me</div>
+                <div class="text-item">Ask about my projects</div>
+                <div class="text-item">Ask about my skills</div>
+                <div class="text-item">Ask about my experience</div>
+                <div class="text-item">Ask about my education</div>
+                <div class="text-item">Ask about my hobbies</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const strip = document.getElementById('textStrip');
+            
+            // --- SETUP: Create the Infinite Loop Illusion ---
+            // We clone the first item and add it to the bottom.
+            const firstItem = strip.children[0];
+            const clone = firstItem.cloneNode(true);
+            strip.appendChild(clone);
+
+            // Variables
+            const itemHeight = 50; // Must match CSS height
+            // We count items AFTER cloning (Originals + 1 Clone)
+            const totalItems = strip.children.length; 
+            let currentIndex = 0;
+
+            // --- ANIMATION FUNCTION ---
+            function nextSlide() {
+                // 1. Increment Index
+                currentIndex++;
+
+                // 2. Enable smooth animation (0.8s slow glide)
+                strip.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+                strip.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+
+                // 3. Check if we hit the Clone (The last item)
+                if (currentIndex === totalItems - 1) {
+                    
+                    // We use 'transitionend' to wait until the movement is 100% DONE.
+                    // This prevents the "blank" glitch or jumping too early.
+                    strip.addEventListener('transitionend', function() {
+                        
+                        // A. Instantly turn off animation
+                        strip.style.transition = 'none';
+                        
+                        // B. Teleport back to the top (Index 0)
+                        currentIndex = 0;
+                        strip.style.transform = `translateY(0px)`;
+                        
+                    }, { once: true }); // Important: Runs only once per loop
+                }
+            }
+
+            // Start the loop every 3 seconds
+            setInterval(nextSlide, 3000);
+        });
+    </script>
+</body>
+</html>
